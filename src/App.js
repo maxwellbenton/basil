@@ -135,7 +135,7 @@ function App() {
   return (
     <Router>
       <Header />
-      <div>
+      <div class="App">
 
         <Route path="/" exact render={props => <Overview {...props} savings={data.savings} incomes={data.incomes} expenses={data.expenses} debts={data.debts} />} />
         <Route path="/savings/" render={props => <Savings {...props} addSavings={addSavings} />} />
