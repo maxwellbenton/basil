@@ -2,7 +2,7 @@ import React, {
   useState,
   useEffect
 } from 'react';
-import logo from './logo.svg';
+
 import {
   set,
   get,
@@ -10,112 +10,138 @@ import {
 } from 'idb-keyval';
 import {
   BrowserRouter as Router,
-  Route,
-  Link
+  Route
 } from "react-router-dom";
 import './App.css';
+import Header from './components/Header'
 import Overview from './components/Overview'
 import About from './components/About'
+import Savings from './components/Savings'
 import Incomes from './components/Incomes'
 import Expenses from './components/Expenses'
-import Investments from './components/Investments'
 import Debts from './components/Debts'
+// import Investments from './components/Investments'
 
-
+const defaultData = {
+  savings: [],
+  incomes: [],
+  expenses: [],
+  debts: []
+}
 
 function App() {
 
-  const [incomes, setIncomes] = useState({});
-  const [expenses, setExpenses] = useState({});
-  const [investments, setInvestments] = useState({});
-  const [debts, setDebts] = useState({});
+  const [data, setData] = useState(defaultData)
 
   useEffect(() => {
-    keys()
-      .then(keys => {
-        if (keys.includes('incomes') && keys.includes('expenses') && keys.includes('investments') && keys.includes('debts')) {
-          get('incomes')
-            .then(val => setIncomes(val))
-          get('expenses')
-            .then(val => setExpenses(val))
-          get('investments')
-            .then(val => setInvestments(val))
-          get('debts')
-            .then(val => setDebts(val))
+
+    get('data')
+      .then(val => {
+        if (!val) {
+          set('data', defaultData)
+            .then(val => {
+              console.log('Savings object created in IDB');
+            })
+            .catch(error => {
+              console.log(error)
+            })
         } else {
-          set('incomes', {})
-          set('expenses', {})
-          set('investments', {})
-          set('debts', {})
+          if (JSON.stringify(val) !== JSON.stringify(data)) {
+            console.log('setting initial data state from IDB', val)
+            setData(val)
+          }
         }
       })
+      .catch((error) => {
+        console.log(error);
+        set('data', defaultData)
+          .then(val => {
+            console.log('Savings object created in IDB');
+          })
+          .catch(error => {
 
+            console.log(error)
+          })
+      })
   })
 
-  function addIncome(newIncome) {
-    let newIncomes = { ...incomes,
-      ...newIncome
+  function addSavings(newSavingsAccount) {
+    let newData = { ...data,
+      savings: [
+        ...data.savings, newSavingsAccount
+      ]
     }
-    setIncomes(newIncomes)
-    set('incomes', newIncomes)
+    set('data', newData)
+      .then(() => {
+        console.log('data updated')
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    setData(newData)
+  }
+
+  function addIncome(newIncome) {
+    let newData = { ...data,
+      incomes: [
+        ...data.incomes, newIncome
+      ]
+    }
+    set('data', newData)
+      .then(() => {
+        console.log('data updated')
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    setData(newData)
   }
 
   function addExpense(newExpense) {
-    let newExpenses = { ...expenses,
-      ...newExpense
+    let newData = { ...data,
+      expenses: [
+        ...data.expenses, newExpense
+      ]
     }
-    setExpenses(newExpenses)
-    set('expenses', newExpenses)
-  }
-
-  function addInvestment(newInvestment) {
-    let newInvestments = { ...investments,
-      ...newInvestment
-    }
-    setInvestments(newInvestments)
-    set('investments', newInvestments)
+    set('data', newData)
+      .then(() => {
+        console.log('data updated')
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    setData(newData)
   }
 
   function addDebt(newDebt) {
-    let newDebts = { ...debts,
-      ...newDebt
+    let newData = { ...data,
+      debts: [
+        ...data.debts, newDebt
+      ]
     }
-    setDebts(newDebts)
-    set('debts', newDebts)
+    set('data', newData)
+      .then(() => {
+        console.log('data updated')
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    setData(newData)
   }
+
+
 
 
   return (
     <Router>
+      <Header />
       <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Overview</Link>
-            </li>
-            <li>
-              <Link to="/incomes/">Incomes</Link>
-            </li>
-            <li>
-              <Link to="/expenses/">Expenses</Link>
-            </li>
-            <li>
-              <Link to="/investments/">Investments</Link>
-            </li>
-            <li>
-              <Link to="/debts/">Debts</Link>
-            </li>
-            <li>
-              <Link to="/about/">About</Link>
-            </li>
-          </ul>
-        </nav>
 
-        <Route path="/" exact component={Overview} />
-        <Route path="/incomes/" component={Incomes} />
-        <Route path="/expenses/" component={Expenses} />
-        <Route path="/investments/" component={Investments} />
-        <Route path="/debts/" component={Debts} />
+        <Route path="/" exact render={props => <Overview {...props} savings={data.savings} incomes={data.incomes} expenses={data.expenses} debts={data.debts} />} />
+        <Route path="/savings/" render={props => <Savings {...props} addSavings={addSavings} />} />
+        <Route path="/incomes/" render={props => <Incomes {...props} addIncome={addIncome} />} />
+        <Route path="/expenses/" render={props => <Expenses {...props} addExpense={addExpense} />} />
+        <Route path="/debts/" render={props => <Debts {...props} addDebt={addDebt} />} />
         <Route path="/about/" component={About} />
       </div>
     </Router>

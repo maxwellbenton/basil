@@ -2,18 +2,18 @@ import React, {
   useState
 } from 'react';
 
-function Expenses({
-  addExpense
+function Savings({
+  addSavings
 }) {
 
-  const [expenseInfo, setExpenseInfo] = useState({
+  const [savingsInfo, setSavingInfo] = useState({
     name: '',
     amount: 0,
-    interval: 'bi-weekly'
+    interest: 0
   });
 
   function handleChange(event) {
-    setExpenseInfo({ ...expenseInfo,
+    setSavingInfo({ ...savingsInfo,
       [event.target.name]: event.target.value
     })
   }
@@ -21,7 +21,7 @@ function Expenses({
   function handleSubmit(event) {
     event.preventDefault()
     debugger
-    addExpense(expenseInfo);
+    addSavings(savingsInfo);
   }
 
   return (
@@ -35,12 +35,8 @@ function Expenses({
       <input onChange={handleChange} type="text" name="amount" />
     </label>
     <label>
-      Interval:
-      <select onChange={handleChange} name="interval">
-        <option value="weekly">Weekly</option>
-        <option value="bi-weekly">Bi-Weekly</option>
-        <option value="monthly">Monthly</option>
-      </select>
+      Interest:
+      <input onChange={handleChange} type="text" name="interest" />
     </label>
     <input type="submit" value="Submit" />
   </form>
@@ -48,4 +44,4 @@ function Expenses({
   )
 }
 
-export default Expenses
+export default Savings

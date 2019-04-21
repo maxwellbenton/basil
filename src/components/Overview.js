@@ -1,8 +1,10 @@
 import React from 'react';
 
-function Overview() {
+function Overview(props) {
+
   return (<div>
-    <h1>Basil</h1>
+  
+
     </div>)
 }
 
